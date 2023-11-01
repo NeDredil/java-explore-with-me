@@ -2,6 +2,7 @@ package ru.practicum.service;
 
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
+import ru.practicum.model.App;
 import ru.practicum.model.Stats;
 import ru.practicum.model.ViewStats;
 
@@ -17,9 +18,9 @@ public class StatsMapper {
     private StatsMapper() {
     }
 
-    public static Stats toStats(EndpointHitDto endpointHitDto) {
+    public static Stats toStats(EndpointHitDto endpointHitDto, App app) {
         return Stats.builder()
-                .app(endpointHitDto.getApp())
+                .app(app.getName())
                 .uri(endpointHitDto.getUri())
                 .ip(endpointHitDto.getIp())
                 .timestamp(LocalDateTime.parse(endpointHitDto.getTimestamp(), formatter))

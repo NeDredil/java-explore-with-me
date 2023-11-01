@@ -7,14 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class StatsClient {
 
     @Value("${STATS_SERVER_URL}")
-    String serverUrl;
+    private String serverUrl;
 
     private final WebClient webClient = WebClient.create(serverUrl);
 
@@ -29,15 +28,14 @@ public class StatsClient {
                 .block();
     }
 
-    public ResponseEntity<List<ViewStatsDto>> getStats(LocalDateTime start, LocalDateTime end,
-                                                       List<String> uris, boolean unique) {
+    public ResponseEntity<List<ViewStatsDto>> getStats(StatsDto statsDto) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/stats")
-                        .queryParam("start", start)
-                        .queryParam("end", end)
-                        .queryParam("unique", unique)
-                        .queryParam("uris", uris)
+                        .queryParam("start", statsDto.getStart())
+                        .queryParam("end", statsDto.getEnd())
+                        .queryParam("unique", statsDto.getUnique())
+                        .queryParam("uris", statsDto.getUris())
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
