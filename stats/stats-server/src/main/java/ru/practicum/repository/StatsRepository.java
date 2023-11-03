@@ -13,11 +13,12 @@ import java.util.List;
 public interface StatsRepository extends JpaRepository<Stats, Long> {
 
     @Query(value = "SELECT new ru.practicum.model.ViewStats(" +
-            "s.app.name as app, s.uri as uri, COUNT(s.ip) as hits) " +
+            "s.app.appName as app, s.uri as uri, COUNT(s.ip) as hits) " +
             "FROM Stats s " +
-            "WHERE s.timestamp between :start AND :end " +
-            "AND uri in ( :uris ) " +
-            "GROUP BY s.app.name, s.uri " +
+            "JOIN s.app app " +
+            "WHERE s.timestamp BETWEEN :start AND :end " +
+            "AND s.uri IN (:uris) " +
+            "GROUP BY s.app.appName, s.uri " +
             "ORDER BY hits DESC")
     List<ViewStats> findStats(LocalDateTime start, LocalDateTime end, List<String> uris);
 
@@ -33,7 +34,7 @@ public interface StatsRepository extends JpaRepository<Stats, Long> {
             "s.app.name as app, s.uri as uri, COUNT(DISTINCT s.ip) as hits) " +
             "FROM Stats s " +
             "WHERE s.timestamp between :start AND :end " +
-            "AND uri in ( :uris ) " +
+            "AND s.uri in (:uris) " +
             "GROUP BY s.app.name, s.uri " +
             "ORDER BY hits DESC")
     List<ViewStats> findStatsUnique(LocalDateTime start, LocalDateTime end, List<String> uris);
