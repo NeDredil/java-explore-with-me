@@ -45,4 +45,5 @@ public interface StatsRepository extends JpaRepository<Stats, Long> {
             "WHERE s.timestamp BETWEEN :start AND :end " +
             "GROUP BY a.name, s.uri " +
             "ORDER BY COUNT(DISTINCT s.ip) DESC")
-    List<ViewStats> findStatsUniqueWithOutUris(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);}
+    List<ViewStats> findStatsUniqueWithOutUris(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+}
