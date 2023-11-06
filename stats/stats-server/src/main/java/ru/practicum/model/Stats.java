@@ -18,8 +18,9 @@ public class Stats {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
-    private String app;
+    @ManyToOne
+    @JoinColumn(name = "app_id")
+    private App app;
 
     @Column(nullable = false)
     private String uri;

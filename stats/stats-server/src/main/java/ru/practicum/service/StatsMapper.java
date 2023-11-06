@@ -20,7 +20,7 @@ public class StatsMapper {
 
     public static Stats toStats(EndpointHitDto endpointHitDto, App app) {
         return Stats.builder()
-                .app(app.getName())
+                .app(app)
                 .uri(endpointHitDto.getUri())
                 .ip(endpointHitDto.getIp())
                 .timestamp(LocalDateTime.parse(endpointHitDto.getTimestamp(), formatter))
@@ -29,7 +29,7 @@ public class StatsMapper {
 
     public static EndpointHitDto toEndpointHitDto(Stats stats) {
         return EndpointHitDto.builder()
-                .app(stats.getApp())
+                .app(stats.getApp().getName())
                 .uri(stats.getUri())
                 .ip(stats.getIp())
                 .timestamp(stats.getTimestamp().toString())
