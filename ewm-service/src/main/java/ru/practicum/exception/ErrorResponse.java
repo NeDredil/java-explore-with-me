@@ -6,10 +6,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Getter
 @Setter
+@Getter
 @Builder
 public class ErrorResponse {
+
     private String status;
     private String message;
     private String reason;

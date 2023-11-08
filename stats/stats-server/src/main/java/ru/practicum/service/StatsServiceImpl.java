@@ -2,10 +2,13 @@ package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.StatsDto;
 import ru.practicum.EndpointHitDto;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.ValidationException;
+import ru.practicum.mapper.StatsMapper;
 import ru.practicum.model.App;
 import ru.practicum.model.Stats;
 import ru.practicum.model.ViewStats;
@@ -24,6 +27,7 @@ public class StatsServiceImpl implements StatsService {
     private final AppRepository appRepository;
 
     @Override
+    @Transactional
     public EndpointHitDto createHit(EndpointHitDto endpointHitDto) {
         String nameApp = endpointHitDto.getApp();
         Optional<App> appName = appRepository.findByName(nameApp);
@@ -37,6 +41,7 @@ public class StatsServiceImpl implements StatsService {
         return StatsMapper.toEndpointHitDto(saved);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ViewStatsDto> getStats(StatsDto statsDto) {
         List<ViewStats> stats;
@@ -44,6 +49,9 @@ public class StatsServiceImpl implements StatsService {
         List<String> uris = statsDto.getUris();
         LocalDateTime start = statsDto.getStart();
         LocalDateTime end = statsDto.getEnd();
+        if (start.isAfter(end)) {
+            throw new ValidationException("Начало диапазона не может быть позже конца диапазона.");
+        }
         if (unique) {
             if (uris == null) {
                 stats = statsRepository.findStatsUniqueWithOutUris(start, end);

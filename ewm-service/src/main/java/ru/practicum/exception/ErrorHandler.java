@@ -1,27 +1,19 @@
 package ru.practicum.exception;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolationException;
-
+import javax.validation.UnexpectedTypeException;
 import java.time.LocalDateTime;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-
-@Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler({ConstraintViolationException.class, IllegalArgumentException.class})
-    @ResponseStatus(BAD_REQUEST)
-    public ErrorResponse handler(HttpServletRequest request, final Exception e) {
-        log.error("Requested URL= {}", request.getRequestURL());
-        log.error("BAD_REQUEST {}", e.getMessage());
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFoundException(final NotFoundException e) {
         return ErrorResponse.builder()
                 .status("NOT_FOUND")
                 .reason("The required object was not found.")
@@ -31,7 +23,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleIncorrectParameterException(final ValidationException e) {
         return ErrorResponse.builder()
                 .status("FORBIDDEN")
@@ -40,4 +32,16 @@ public class ErrorHandler {
                 .time(LocalDateTime.now())
                 .build();
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUnexpectedTypeException(final UnexpectedTypeException e) {
+        return ErrorResponse.builder()
+                .status("BAD REQUEST")
+                .reason("not valid data")
+                .message(e.getMessage())
+                .time(LocalDateTime.now())
+                .build();
+    }
+
 }
