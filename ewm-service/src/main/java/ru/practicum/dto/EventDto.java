@@ -3,7 +3,6 @@ package ru.practicum.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.model.Category;
 import ru.practicum.model.EventState;
 import ru.practicum.model.Location;
 
@@ -32,7 +31,7 @@ public class EventDto {
 
     private String annotation;
 
-    private Category category;
+    private CategoryDto category;
 
     private Long confirmedRequests;
 

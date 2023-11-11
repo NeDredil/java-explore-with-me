@@ -13,7 +13,10 @@ import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ru.practicum.Constant.*;
 
@@ -89,4 +92,14 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.toParticipationRequestDto(saved);
     }
 
+    public Map<Long, Long> countConfirmedRequestsByEvents(List<Long> eventIds) {
+        if (eventIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        List<Long> results = requestRepository.countAllByEventIdInAndStatus(eventIds, RequestStatus.CONFIRMED);
+
+        return results.stream()
+                .collect(Collectors.toMap(eventId -> eventIds.get(results.indexOf(eventId)), count -> count));
+    }
 }

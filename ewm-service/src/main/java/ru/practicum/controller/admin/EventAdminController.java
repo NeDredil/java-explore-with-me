@@ -2,7 +2,9 @@ package ru.practicum.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.dto.EventAdminDto;
 import ru.practicum.dto.EventDto;
 import ru.practicum.dto.UpdateEventAdminRequestDto;
 import ru.practicum.model.EventState;
@@ -28,7 +30,8 @@ public class EventAdminController {
                                       @RequestParam(defaultValue = "0") int from,
                                       @RequestParam(defaultValue = "10") int size) {
         log.info("Admin. Search event");
-        return eventService.searchEvent(users, states, categories, rangeStart, rangeEnd, from, size);
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        return eventService.searchEvent(new EventAdminDto(users, states, categories, rangeStart, rangeEnd, pageRequest));
     }
 
     @PatchMapping("/{eventId}")

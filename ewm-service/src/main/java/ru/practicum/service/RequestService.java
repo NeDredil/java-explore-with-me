@@ -3,6 +3,7 @@ package ru.practicum.service;
 import ru.practicum.dto.ParticipationRequestDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RequestService {
 
@@ -11,5 +12,7 @@ public interface RequestService {
     List<ParticipationRequestDto> getRequestByUser(long userId);
 
     ParticipationRequestDto cancelRequestByUser(long userId, long requestId);
+
+    Map<Long, Long> countConfirmedRequestsByEvents(List<Long> eventIds);
 
 }

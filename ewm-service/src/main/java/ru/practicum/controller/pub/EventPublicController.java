@@ -2,8 +2,10 @@ package ru.practicum.controller.pub;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EventDto;
+import ru.practicum.dto.EventPublicDto;
 import ru.practicum.model.EventSort;
 import ru.practicum.service.EventService;
 
@@ -30,8 +32,9 @@ public class EventPublicController {
                             @RequestParam(defaultValue = "10") int size,
                             HttpServletRequest request) {
         log.info("Public. Get event");
-        return eventPublicService.getEvent(text, categories, paid, rangeStart, rangeEnd,
-                onlyAvailable, sort, from, size, request);
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        return eventPublicService.getEvent(new EventPublicDto(text, categories, paid, rangeStart, rangeEnd,
+                onlyAvailable, sort, pageRequest, request));
     }
 
     @GetMapping("/{id}")

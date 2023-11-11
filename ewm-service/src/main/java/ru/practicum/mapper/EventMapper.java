@@ -33,8 +33,7 @@ public class EventMapper {
     public static EventDto toEventDto(Event event) {
         return EventDto.builder()
                 .annotation(event.getAnnotation())
-                .category(event.getCategory())
-                .confirmedRequests(event.getConfirmedRequests())
+                .category(CategoryMapper.toCategoryDto(event.getCategory()))
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
                 .eventDate(event.getEventDate().format(formatter))
@@ -53,8 +52,7 @@ public class EventMapper {
     public static EventShortDto toEventShortDto(Event event) {
         return EventShortDto.builder()
                 .annotation(event.getAnnotation())
-                .category(event.getCategory())
-                .confirmedRequests(event.getConfirmedRequests())
+                .category(CategoryMapper.toCategoryDto(event.getCategory()))
                 .eventDate(event.getEventDate())
                 .id(event.getId())
                 .initiator(UserMapper.toShortUserDto(event.getInitiator()))

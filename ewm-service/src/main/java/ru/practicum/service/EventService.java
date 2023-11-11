@@ -1,16 +1,13 @@
 package ru.practicum.service;
 
 import ru.practicum.dto.*;
-import ru.practicum.model.EventSort;
-import ru.practicum.model.EventState;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface EventService {
 
-    List<EventDto> searchEvent(List<Long> users, List<EventState> states, List<Long> categories,
-                               String rangeStart, String rangeEnd, int from, int size);
+    List<EventDto> searchEvent(EventAdminDto  eventAdminDto);
 
     EventDto updateAdminByEvent(long eventId, UpdateEventAdminRequestDto eventDto);
 
@@ -27,8 +24,7 @@ public interface EventService {
     EventRequestStatusUpdateResultDto updateEventRequest(long userId, long eventId,
                                                          EventRequestStatusUpdateRequestDto requestsByEvent);
 
-    List<EventDto> getEvent(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd,
-                            boolean onlyAvailable, EventSort sort, int from, int size, HttpServletRequest request);
+    List<EventDto> getEvent(EventPublicDto eventPublicDto);
 
     EventDto getEventById(long eventId, HttpServletRequest request);
 

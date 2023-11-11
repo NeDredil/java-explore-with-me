@@ -33,6 +33,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIncorrectParameterException(final ValidationException e) {
+        log.error("BAD_REQUEST {}", e.getMessage());
         return ErrorResponse.builder()
                 .status("FORBIDDEN")
                 .reason("For the requested operation the conditions are not met.")

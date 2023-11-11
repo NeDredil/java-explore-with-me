@@ -10,7 +10,9 @@ import ru.practicum.model.Event;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ru.practicum.Constant.SERVICE_NAME;
 import static ru.practicum.Constant.formatter;
@@ -47,4 +49,12 @@ public class StatisticService {
         return views;
     }
 
+    public Map<Long, Long> getViews(List<Event> events) {
+        Map<Long, Long> viewsMap = new HashMap<>();
+        for (Event event : events) {
+            long views = getViews(event);
+            viewsMap.put(event.getId(), views);
+        }
+        return viewsMap;
+    }
 }
