@@ -173,12 +173,13 @@ public class EventServiceImpl implements EventService {
         List<Long> eventIds = events.stream()
                 .map(Event::getId)
                 .collect(Collectors.toList());
-        Map<Long,Long> confirmedRequestsCount = requestService.countConfirmedRequestsByEvents(eventIds);
+        Map<Long, Long> confirmedRequestsCount = requestService.countConfirmedRequestsByEvents(eventIds);
         Map<Long, Long> viewsMap = statisticService.getViews(events);
         List<EventDto> eventsDto = new ArrayList<>();
         for (Event event : events) {
             EventDto eventDto = EventMapper.toEventDto(event);
-            eventDto.setConfirmedRequests(confirmedRequestsCount.get(event.getId()));
+            Long confirmedRequests = confirmedRequestsCount.get(event.getId());
+            eventDto.setConfirmedRequests(confirmedRequests != null ? confirmedRequests : 0L);
             eventDto.setViews(viewsMap.get(event.getId()));
             eventsDto.add(eventDto);
         }

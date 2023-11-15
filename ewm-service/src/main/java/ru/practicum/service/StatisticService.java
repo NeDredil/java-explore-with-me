@@ -10,9 +10,9 @@ import ru.practicum.model.Event;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static ru.practicum.Constant.SERVICE_NAME;
 import static ru.practicum.Constant.formatter;
@@ -32,7 +32,7 @@ public class StatisticService {
         return statsClient.createHit(hitDto);
     }
 
-    public long getViews(Event event) {
+    public Long getViews(Event event) {
         long views;
         List<String> uri = List.of("/events/" + event.getId());
         List<ViewStatsDto> viewStats = statsClient.getStats(StatsDto.builder()
@@ -42,7 +42,7 @@ public class StatisticService {
                 .unique(true)
                 .build());
         if (viewStats.isEmpty()) {
-            return 0;
+            return null;
         } else {
             views = viewStats.get(0).getHits();
         }
@@ -50,11 +50,26 @@ public class StatisticService {
     }
 
     public Map<Long, Long> getViews(List<Event> events) {
-        Map<Long, Long> viewsMap = new HashMap<>();
-        for (Event event : events) {
-            long views = getViews(event);
-            viewsMap.put(event.getId(), views);
-        }
-        return viewsMap;
+        List<String> uris = events.stream()
+                .map(event -> "/events/" + event.getId())
+                .collect(Collectors.toList());
+
+        LocalDateTime startDate = events.stream()
+                .map(Event::getCreatedOn)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+
+        List<ViewStatsDto> viewStats = statsClient.getStats(StatsDto.builder()
+                .start(startDate)
+                .end(LocalDateTime.now())
+                .uris(uris)
+                .unique(true)
+                .build());
+
+        return viewStats.stream()
+                .collect(Collectors.toMap(
+                        stats -> Long.parseLong(stats.getUri().substring("/events/".length())),
+                        ViewStatsDto::getHits
+                ));
     }
 }

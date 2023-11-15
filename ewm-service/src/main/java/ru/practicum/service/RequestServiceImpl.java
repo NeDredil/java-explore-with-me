@@ -92,14 +92,15 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.toParticipationRequestDto(saved);
     }
 
+    @Override
     public Map<Long, Long> countConfirmedRequestsByEvents(List<Long> eventIds) {
         if (eventIds.isEmpty()) {
             return new HashMap<>();
         }
 
-        List<Long> results = requestRepository.countAllByEventIdInAndStatus(eventIds, RequestStatus.CONFIRMED);
+        List<ParticipationRequest> requests = requestRepository.findAllByEventIdAndStatus(eventIds, RequestStatus.CONFIRMED);
 
-        return results.stream()
-                .collect(Collectors.toMap(eventId -> eventIds.get(results.indexOf(eventId)), count -> count));
+        return requests.stream()
+                .collect(Collectors.groupingBy(request -> request.getEvent().getId(), Collectors.counting()));
     }
 }
