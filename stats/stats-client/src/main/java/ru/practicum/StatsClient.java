@@ -1,45 +1,51 @@
 package ru.practicum;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.validation.Valid;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class StatsClient {
 
-    @Value("${STATS_SERVER_URL}")
-    private String serverUrl;
+    private final WebClient webClient;
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private final WebClient webClient = WebClient.create(serverUrl);
+    @Autowired
+    public StatsClient(@Value("${STATS_SERVER_URL}") String uri) {
+        this.webClient = WebClient.create(uri);
+    }
 
-    public ResponseEntity<EndpointHitDto> createHit(@Valid EndpointHitDto endpointHitDto) {
+    public EndpointHitDto createHit(@Valid EndpointHitDto endpointHitDto) {
         return webClient.post()
                 .uri("/hit")
-                .contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(endpointHitDto)
                 .retrieve()
-                .toEntity(EndpointHitDto.class)
+                .bodyToMono(EndpointHitDto.class)
                 .block();
     }
 
-    public ResponseEntity<List<ViewStatsDto>> getStats(StatsDto statsDto) {
+    public List<ViewStatsDto> getStats(StatsDto statsDto) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/stats")
-                        .queryParam("start", statsDto.getStart())
-                        .queryParam("end", statsDto.getEnd())
-                        .queryParam("unique", statsDto.getUnique())
+                        .queryParam("start", statsDto.getStart().format(formatter))
+                        .queryParam("end", statsDto.getEnd().format(formatter))
                         .queryParam("uris", statsDto.getUris())
+                        .queryParam("unique", statsDto.getUnique())
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .toEntityList(ViewStatsDto.class)
+                .bodyToFlux(ViewStatsDto.class)
+                .collectList()
                 .block();
     }
 
